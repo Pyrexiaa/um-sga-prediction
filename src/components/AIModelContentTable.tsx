@@ -21,7 +21,7 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
     };
 
     const compulsoryFields = [
-        'MotherId',
+        'Gender',
         'MaternalAge',
         'HeadCircumference',
         'AbdominalCircumference',

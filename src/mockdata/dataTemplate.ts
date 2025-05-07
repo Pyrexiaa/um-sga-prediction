@@ -1,5 +1,4 @@
 export const dataTemplate = {
-    MotherId: '',
     MaternalAge: '',
     MaternalHeight: '',
     MaternalWeight: '',

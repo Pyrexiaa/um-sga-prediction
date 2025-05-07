@@ -14,7 +14,6 @@ export function AimodelPage() {
     const secondCardRef = useRef<HTMLDivElement | null>(null);
     const [combinedHeight, setCombinedHeight] = useState(0);
 
-    const [patientId, setPatientId] = useState('');
     const [isSuccessful, setIsSuccessful] = useState<boolean | null>(null);
     const [patientName, setPatientName] = useState('');
     const [patientAge, setPatientAge] = useState('');
@@ -35,10 +34,6 @@ export function AimodelPage() {
         // Since blue card has mb-2 in between, 14 pixels have to be added
         setCombinedHeight(firstCardHeight + secondCardHeight + 14);
     }, [isSuccessful]);
-
-    const handlePatientIDInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPatientId(e.target.value);
-    };
 
     const handleRetrievePatientId = async (inputPatientID: string) => {
         try {
@@ -100,6 +95,16 @@ export function AimodelPage() {
             );
         }
 
+        if (!submitStatus) {
+            return (
+                <div className="flex flex-col w-full mt-4">
+                    <div className="flex items-center bg-sky-500 px-4 rounded-lg">
+                        <h1 className="text-white text-lg font-md m-2">Please submit fetal information to get your prediction results.</h1>
+                    </div>
+                </div>
+            )
+        }
+
         if (errorOccurred) {
             return (
                 <div className="flex flex-col w-full mt-4">
@@ -157,174 +162,18 @@ export function AimodelPage() {
     };
     return (
         <div className="flex flex-col">
-            <div className="flex flex-row w-full">
-                <div className="flex flex-col space-y-4 w-1/4 mr-4">
+            <div className="flex flex-col w-full">
+                <div className="flex space-y-4">
                     <BlueCard ref={firstCardRef}>
-                        <div className="flex items-center mb-4">
-                            <h1 className="text-lg font-semibold mr-2">Patient ID (Mother)</h1>
-                            <img
-                                src={InfoIcon}
-                                alt="Info Icon"
-                            />
+                        <div className="flex flex-col items-center mb-2">
+                            <h1 className="text-lg font-semibold mx-2">A DOMAIN-GENERALIZED PREDICTIVE MODEL FOR IDENTIFYING SMALL FOR GESTATIONAL AGE (SGA) INFANTS ACROSS MULTI-CENTER COHORTS</h1>
+                            <p className='text-md mx-2 text-center'>By integrating feature-imputation techniques and a unified training strategy,
+                                our model effectively combines the strengths of large feature sets with limited data and smaller feature sets with larger datasets,
+                                addressing the challenge of data scarcity in healthcare,
+                                resulting in improvement in performance with low-volume data
+                            </p>
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Input Patient ID"
-                            value={patientId}
-                            onChange={handlePatientIDInputChange}
-                            className="border border-gray-300 rounded p-2 w-full"
-                        />
-                        <button
-                            onClick={() => handleRetrievePatientId(patientId)}
-                            className="mt-4 bg-blue-500 text-white rounded p-2 w-full"
-                            type="button"
-                        >
-                            Retrieve Patient ID
-                        </button>
-                        {isSuccessful === true && (
-                            <p className="mt-2 text-black">Patient ID retrieval successful: {patientId}</p>
-                        )}
-                        {isSuccessful === false && (
-                            <div>
-                                <p className="mt-2 text-red-500">Error: Patient ID not found.</p>
-                                <button
-                                    onClick={() => setIsModalOpen(true)}
-                                    className="text-red-500 hover:underline"
-                                    type="button"
-                                >
-                                    Create new patient?
-                                </button>
-                                <CreatePatientModal
-                                    isOpen={isModalOpen}
-                                    onClose={() => setIsModalOpen(false)}
-                                    onSave={handleSaveNewPatient}
-                                />
-                            </div>
-                        )}
                     </BlueCard>
-                    {isSuccessful === true ? (
-                        <BlueCard ref={secondCardRef}>
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={openModal}
-                                    aria-label="Expand details"
-                                    className="p-1 focus:outline-none"
-                                    type="button"
-                                >
-                                    <img
-                                        src={ExpandIcon}
-                                        alt="Expand Icon"
-                                        className="w-6 h-6"
-                                    />
-                                </button>
-                            </div>
-
-                            <div className="flex justify-center my-4">
-                                <img
-                                    src={MaleUserIcon}
-                                    alt="Patient"
-                                    className="w-24 h-24 rounded-full object-cover"
-                                />
-                            </div>
-
-                            <p className="text-center text-lg font-semibold mt-2">{patientName}</p>
-
-                            <div className="text-left mt-2">
-                                <p className="text-gray-600">Patient Details</p>
-                            </div>
-
-                            <hr className="my-2 border-gray-300" />
-
-                            <div className="flex flex-col text-left">
-                                <p className="flex text-gray-700 justify-between">
-                                    Age: <span className="font-semibold">{patientAge}</span>
-                                </p>
-                                <p className="flex text-gray-700 justify-between">
-                                    Height (m): <span className="font-semibold">{patientHeight}</span>
-                                </p>
-                                <p className="flex text-gray-700 justify-between">
-                                    Weight (kg): <span className="font-semibold">{patientWeight}</span>
-                                </p>
-                                <p className="flex text-gray-700 justify-between">
-                                    Hospital: <span className="font-semibold">{patientHospital}</span>
-                                </p>
-                            </div>
-
-                            <Modal
-                                isOpen={isModalOpen}
-                                onClose={closeModal}
-                            >
-                                <h2 className="text-xl font-semibold mb-4">Detailed Patient Information</h2>
-                                <p>
-                                    <strong>Age: </strong>
-                                    {patientAge}
-                                </p>
-                                <p>
-                                    <strong>Height (m): </strong>
-                                    {patientHeight}
-                                </p>
-                                <p>
-                                    <strong>Weight (kg): </strong>
-                                    {patientWeight}
-                                </p>
-                                <p>
-                                    <strong>Smoking: </strong>
-                                    {patientSmoking ? 'Yes' : 'No'}
-                                </p>
-                                <p>
-                                    <strong>Pregestational LDM: </strong>
-                                    {patientPregestationalLDM ? 'Yes' : 'No'}
-                                </p>
-                                <p>
-                                    <strong>Gestational LDM: </strong>
-                                    {patientGestationalLDM ? 'Yes' : 'No'}
-                                </p>
-                                <p>
-                                    <strong>Pregnancy Induced Hypertension: </strong>
-                                    {patientPregnancyInducedHypertension ? 'Yes' : 'No'}
-                                </p>
-                                <p>
-                                    <strong>High Risk Preeclampsia: </strong>
-                                    {patientHighRiskPreeclampsia ? 'Yes' : 'No'}
-                                </p>
-                                <p>
-                                    <strong>Previously Failed Pregnancy: </strong>
-                                    {patientPreviouslyFailedPregnancy ? 'Yes' : 'No'}
-                                </p>
-                            </Modal>
-                        </BlueCard>
-                    ) : (
-                        <BlueCard ref={secondCardRef}>
-                            <div className="flex justify-center my-4">
-                                <img
-                                    src={MaleUserIcon}
-                                    alt="Patient"
-                                    className="w-24 h-24 rounded-full object-cover"
-                                />
-                            </div>
-
-                            <div className="text-left mt-2">
-                                <p className="text-gray-600">Patient Details</p>
-                            </div>
-
-                            <hr className="my-2 border-gray-300" />
-
-                            <div className="flex flex-col text-left">
-                                <p className="flex text-gray-700 justify-between">
-                                    Age: <span className="font-semibold">Unknown</span>
-                                </p>
-                                <p className="flex text-gray-700 justify-between">
-                                    Height (m): <span className="font-semibold">Unknown</span>
-                                </p>
-                                <p className="flex text-gray-700 justify-between">
-                                    Weight (kg): <span className="font-semibold">Unknown</span>
-                                </p>
-                                <p className="flex text-gray-700 justify-between">
-                                    Hospital: <span className="font-semibold">Unknown</span>
-                                </p>
-                            </div>
-                        </BlueCard>
-                    )}
                 </div>
                 <AIModelContent
                     setLoading={setLoading}

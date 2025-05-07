@@ -59,7 +59,6 @@ export function AIModelContent({
     setErrorOccurred,
     setSubmitStatus,
     setIsSGA,
-    height,
 }: AIModelContentProps) {
     const [isExpandModalOpen, setExpandModalOpen] = useState(false);
     const [isCreateModalOpen, setCreateModalOpen] = useState(false);
@@ -97,20 +96,8 @@ export function AIModelContent({
             setIsSaved(true);
             setSubmitStatus(true);
 
-            // Validation Check, if mother exists
-            if ((await checkMotherExists(formData['MotherId'])) === false) {
-                // Show mother not existing, please create a new one
-                setCheckMotherModal(true);
-                setTimeout(() => {
-                    setCheckMotherModal(false);
-                }, 3000);
-                setErrorOccurred(true);
-                return;
-            }
-
             // Validation Check, ensure required fields are filled in
             const requiredFields = [
-                'MotherId',
                 'MaternalAge',
                 'Gender',
                 'EstimatedFetalWeight',
@@ -173,7 +160,6 @@ export function AIModelContent({
             console.log('Response received after imputing: ', response.data);
 
             const motherPatient = {
-                id: Number(response.data['MotherId']),
                 age: Number(response.data['MaternalAge']),
                 height: Number(response.data['MaternalHeight']),
                 weight: Number(response.data['MaternalWeight']),
@@ -194,7 +180,6 @@ export function AIModelContent({
             }
 
             const scans = {
-                motherId: Number(response.data['MotherId']),
                 gender: response.data['Gender'] === 'male' ? 0 : 1,
                 ga: Number(response.data['GestationalAge']),
                 bpd: Number(response.data['BiparietalDiameter']),
@@ -225,8 +210,7 @@ export function AIModelContent({
 
     return (
         <div
-            className="flex flex-col w-3/4 bg-white rounded-md shadow p-4"
-            style={{ height }}
+            className="flex flex-col bg-white rounded-md shadow p-4"
         >
             {/* Header Section */}
             <div className="flex justify-between items-center mb-4">
@@ -330,23 +314,13 @@ export function AIModelContent({
             </Modal>
 
             <Modal
-                isOpen={checkMotherModal}
-                onClose={() => setCheckMotherModal(false)}
-            >
-                <h2 className="text-xl font-semibold mb-4">Mother ID not found</h2>
-                <p className="mb-4">
-                    <strong>Please check the ID, or create a new record.</strong>
-                </p>
-            </Modal>
-
-            <Modal
                 isOpen={checkRequiredFieldModal}
                 onClose={() => setCheckRequiredFieldModal(false)}
             >
                 <h2 className="text-xl font-semibold mb-4">Required Fields Incomplete</h2>
                 <p className="mb-4">
                     <strong>
-                        Please ensure that the Mother ID, Maternal Age, Gender, Estimated Fetal Weight, Femur Length,
+                        Please ensure that the Maternal Age, Gender, Estimated Fetal Weight, Femur Length,
                         Gestational Age, Head Circumference and Abdominal Circumference are filled.
                     </strong>
                 </p>

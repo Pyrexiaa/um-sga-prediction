@@ -5,8 +5,11 @@ import {AimodelPage} from './pages/Model'
 
 export default function App() {
   return (
-    <div className="m-5 p-5 rounded-lg min-h-[calc(100vh-40px)]">
-      <AimodelPage />
+    <div className='bg-sky-100'> 
+      <div className="mx-5 p-5 rounded-lg min-h-[calc(100vh-40px)] ">
+        <AimodelPage />
+      </div>
     </div>
+   
   );
 }
