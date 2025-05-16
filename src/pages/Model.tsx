@@ -1,13 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
 import { BlueCard } from '../components/Card';
-import { Modal } from '../modals/Modal';
 import { AIModelContent } from '../components/AIModelContent';
-import { CreatePatientModal } from '../components/CreateNewPatient';
-import InfoIcon from '../assets/InfoIcon.svg';
-import ExpandIcon from '../assets/ExpandIcon.svg';
-import MaleUserIcon from '../assets/MaleUserIcon.svg';
-import { getSingleMotherURL, postNewMotherURL } from '../constants';
 
 export function AimodelPage() {
     const firstCardRef = useRef<HTMLDivElement | null>(null);
@@ -15,17 +8,6 @@ export function AimodelPage() {
     const [combinedHeight, setCombinedHeight] = useState(0);
 
     const [isSuccessful, setIsSuccessful] = useState<boolean | null>(null);
-    const [patientName, setPatientName] = useState('');
-    const [patientAge, setPatientAge] = useState('');
-    const [patientHeight, setPatientHeight] = useState('');
-    const [patientWeight, setPatientWeight] = useState('');
-    const [patientHospital, setPatientHospital] = useState('');
-    const [patientSmoking, setPatientSmoking] = useState(false);
-    const [patientPregestationalLDM, setPatientPregestationalLDM] = useState(false);
-    const [patientGestationalLDM, setPatientGestationalLDM] = useState(false);
-    const [patientPregnancyInducedHypertension, setPatientPregnancyInducedHypertension] = useState(false);
-    const [patientHighRiskPreeclampsia, setPatientHighRiskPreeclampsia] = useState(false);
-    const [patientPreviouslyFailedPregnancy, setPatientPreviouslyFailedPregnancy] = useState(false);
 
     useEffect(() => {
         // Calculate the combined height of both BlueCard elements
@@ -35,56 +17,10 @@ export function AimodelPage() {
         setCombinedHeight(firstCardHeight + secondCardHeight + 14);
     }, [isSuccessful]);
 
-    const handleRetrievePatientId = async (inputPatientID: string) => {
-        try {
-            const response = await axios.get(`${getSingleMotherURL}/${inputPatientID}`);
-            setPatientName(response.data.name);
-            setPatientAge(response.data.age);
-            setPatientHeight(response.data.height);
-            setPatientWeight(response.data.weight);
-            setPatientHospital(response.data.hospital);
-            setPatientSmoking(response.data.Smoking);
-            setPatientPregestationalLDM(response.data.PregestationalLDM);
-            setPatientGestationalLDM(response.data.GestationalLDM);
-            setPatientPregnancyInducedHypertension(response.data.PregnancyInducedHypertension);
-            setPatientHighRiskPreeclampsia(response.data.HighRiskPreeclampsia);
-            setPatientPreviouslyFailedPregnancy(response.data.PreviouslyFailedPregnancy);
-            setIsSuccessful(true);
-        } catch (error) {
-            setIsSuccessful(false);
-        }
-    };
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
-
     const [loading, setLoading] = useState(false);
     const [errorOccurred, setErrorOccurred] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(false);
     const [isSGA, setIsSGA] = useState(true);
-
-    const handleSaveNewPatient = async (patientData: Record<string, any>) => {
-        // Save the new patient data (e.g., API call or update state)
-        try {
-            const newPatient = {
-                name: patientData.name,
-                age: Number(patientData.age),
-                height: Number(patientData.height),
-                weight: Number(patientData.weight),
-                hospital: patientData.hospital,
-                PreviouslyFailedPregnancy: patientData.failedPregnancyCount,
-                HighRiskPreeclampsia: patientData.highRiskPreeclampsia,
-                PregnancyInducedHypertension: patientData.pregnancyHypertension,
-                PregestationalLDM: patientData.pregestationalLDM,
-                GestationalLDM: patientData.gestationalLDM,
-                Smoking: patientData.doesSmoke,
-            };
-            const response = await axios.post(postNewMotherURL, newPatient);
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const resultRow = () => {
         if (loading) {
@@ -97,17 +33,13 @@ export function AimodelPage() {
 
         if (!submitStatus) {
             return (
-                <div className="flex flex-col w-full mt-4">
-                    <div className="flex items-center bg-sky-500 px-4 rounded-lg">
-                        <h1 className="text-white text-lg font-md m-2">Please submit fetal information to get your prediction results.</h1>
-                    </div>
-                </div>
+                <div className="flex flex-col w-full mt-2"/>
             )
         }
 
         if (errorOccurred) {
             return (
-                <div className="flex flex-col w-full mt-4">
+                <div className="flex flex-col w-full mt-2">
                     <div className="flex items-center bg-red-500 px-4 rounded-lg">
                         <h1 className="text-white text-lg font-md m-2">An error occurred. Please try again.</h1>
                     </div>
@@ -117,7 +49,7 @@ export function AimodelPage() {
 
         if (!errorOccurred && submitStatus) {
             return (
-                <div className="flex flex-col w-full mt-4">
+                <div className="flex flex-col w-full mt-2">
                     {isSGA ? (
                         <div>
                             <div className="flex items-center bg-red-500 px-4 rounded-t-lg">
@@ -166,8 +98,9 @@ export function AimodelPage() {
                 <div className="flex space-y-4">
                     <BlueCard ref={firstCardRef}>
                         <div className="flex flex-col items-center mb-2">
-                            <h1 className="text-lg font-semibold mx-2">A DOMAIN-GENERALIZED PREDICTIVE MODEL FOR IDENTIFYING SMALL FOR GESTATIONAL AGE (SGA) INFANTS ACROSS MULTI-CENTER COHORTS</h1>
-                            <p className='text-md mx-2 text-center'>By integrating feature-imputation techniques and a unified training strategy,
+                            
+                            <h1 className="text-4xl w-full text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-purple-500 to-blue-500 p-2">A DOMAIN-GENERALIZED PREDICTIVE MODEL FOR IDENTIFYING SMALL FOR GESTATIONAL AGE (SGA) INFANTS ACROSS MULTI-CENTER COHORTS</h1>
+                            <p className='text-lg font-bold mx-2 text-white'>By integrating feature-imputation techniques and a unified training strategy,
                                 our model effectively combines the strengths of large feature sets with limited data and smaller feature sets with larger datasets,
                                 addressing the challenge of data scarcity in healthcare,
                                 resulting in improvement in performance with low-volume data

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { dataTemplate } from '../mockdata/dataTemplate';
+import React from 'react';
 
 interface AIModelContentTableProps {
     formData: Record<string, any>;
@@ -11,13 +10,10 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
     ) => {
         const { id, value } = e.target;
-        setFormData((prev: any) => {
-            const updatedFormData = {
-                ...prev,
-                [id]: value,
-            };
-            return updatedFormData;
-        });
+        setFormData((prev: any) => ({
+            ...prev,
+            [id]: value,
+        }));
     };
 
     const compulsoryFields = [
@@ -29,6 +25,33 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
         'GestationalAge',
         'EstimatedFetalWeight',
     ];
+
+    const maternalFields = [
+        'MaternalHeight',
+        'MaternalWeight',
+        'LastPregnancySga',
+        'LastPregnancyFgr',
+        'LastPregnancyNormal',
+        'PreviousFailedPregnancy',
+        'HighRiskPretermPreeclampsia',
+        'PregnancyInducedHypertension',
+        'EssentialHypertension',
+        'PregestationalDiabetes',
+        'GestationalDiabetes',
+        'Smoking',
+    ]
+
+    const fetusFields = [
+        'PlacentaSite',
+        'BiparietalDiameter',
+        'CerebroplacentalRatio',
+        'AmnioticFluid',
+        'AmnioticFluidIndex',
+        'UterineArteryResistanceIndex',
+        'UterineArteryPulsatilityIndex',
+        'UmbilicalArterialPulsatilityIndex',
+        'MiddleCerebralArteryPeakSystolicVelocity'
+    ]
 
     const trueFalseFields = [
         'LastPregnancySga',
@@ -60,8 +83,8 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
             return (
                 <select
                     id={key}
-                    value={formData[key] || 'unknown'}
-                    onChange={(e) => handleInputChange(e)}
+                    value={formData[key] || ''}
+                    onChange={handleInputChange}
                     className="border border-gray-300 p-2 rounded-md focus:outline-none focus:border-blue-500"
                 >
                     <option value="">Select</option>
@@ -76,15 +99,12 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
                 <select
                     id={key}
                     value={formData[key] || ''}
-                    onChange={(e) => handleInputChange(e)}
+                    onChange={handleInputChange}
                     className="border border-gray-300 p-2 rounded-md focus:outline-none focus:border-blue-500"
                 >
                     <option value="">Select</option>
                     {dropdownFields[key as keyof typeof dropdownFields].map((option: string) => (
-                        <option
-                            key={option}
-                            value={option}
-                        >
+                        <option key={option} value={option}>
                             {option}
                         </option>
                     ))}
@@ -96,31 +116,88 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
             <input
                 type="text"
                 id={key}
-                value={formData[key]}
-                onChange={(e) => handleInputChange(e)}
+                value={formData[key] || ''}
+                onChange={handleInputChange}
                 className="border border-gray-300 p-2 rounded-md focus:outline-none focus:border-blue-500"
                 placeholder={compulsoryFields.includes(key) ? 'Enter value (required)' : 'Optional'}
             />
         );
     };
 
+    const renderFields = (fields: string[], sectionTitle: string, bgColor: string) => (
+        <div className={`p-4 rounded-md ${bgColor}`}>
+            <h2 className="text-lg font-bold mb-2 text-white">{sectionTitle}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {fields.map((key) => (
+                    <div key={key} className="flex flex-col">
+                        <label htmlFor={key} className="text-sm font-semibold mb-1 break-words">
+                            {key.replace(/([A-Z])/g, ' $1')}
+                            {compulsoryFields.includes(key) && ' *'}
+                        </label>
+                        {renderInputField(key)}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const dropdownKeys = Object.keys(dropdownFields);
+
+    const getFieldGroupsByInputType = (fields: string[]) => {
+        const rendered = new Set<string>();
+        return {
+            
+            dropdown: fields.filter((key) => {
+                if (dropdownKeys.includes(key) && !rendered.has(key)) {
+                    rendered.add(key);
+                    return true;
+                }
+                return false;
+            }),
+            text: fields.filter((key) => {
+                if (
+                    !trueFalseFields.includes(key) &&
+                    !dropdownKeys.includes(key) &&
+                    !rendered.has(key)
+                ) {
+                    rendered.add(key);
+                    return true;
+                }
+                return false;
+            }),
+            trueFalse: fields.filter((key) => {
+                if (trueFalseFields.includes(key) && !rendered.has(key)) {
+                    rendered.add(key);
+                    return true;
+                }
+                return false;
+            }),
+        };
+    };
+    
+    const renderSection = (title: string, fields: string[], bgColor: string) => {
+        const grouped = getFieldGroupsByInputType(fields);
+        return (
+            <div className={`flex flex-col gap-4 w-full ${bgColor} p-4 rounded-md`}>
+                <h2 className="text-2xl font-bold mb-2 text-white">{title}</h2>
+                {grouped.dropdown.length > 0 &&
+                    renderFields(grouped.dropdown, 'Dropdown Fields', 'bg-blue-900 bg-opacity-10')}
+                {grouped.text.length > 0 &&
+                    renderFields(grouped.text, 'Fill in the Blank', 'bg-blue-900 bg-opacity-10')}
+                {grouped.trueFalse.length > 0 &&
+                    renderFields(grouped.trueFalse, 'True/False Fields', 'bg-blue-900 bg-opacity-10')}
+            </div>
+        );
+    };
+    
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-2">
-            {Object.keys(dataTemplate).map((key) => (
-                <div
-                    key={key}
-                    className="flex flex-col justify-between"
-                >
-                    <label
-                        htmlFor={key}
-                        className="text-sm font-semibold mb-1 capitalize break-words"
-                    >
-                        {key.replace(/([A-Z])/g, ' $1')}
-                        {compulsoryFields.includes(key) && ' *'}
-                    </label>
-                    {renderInputField(key)}
-                </div>
-            ))}
+        <div className="flex justify-center w-full">
+            <div className="flex flex-col gap-6 w-full">
+                {renderSection('Compulsory Clinical Measurements', compulsoryFields, 'bg-gradient-to-b from-purple-600 to-purple-500')}
+                {renderSection('Maternal Health & History', maternalFields, 'bg-gradient-to-b from-purple-500 to-purple-400')}
+                {renderSection('Fetal Biometry & Doppler Assessments', fetusFields, 'bg-gradient-to-b from-purple-400 to-purple-300')}
+            </div>
         </div>
     );
 }
+
