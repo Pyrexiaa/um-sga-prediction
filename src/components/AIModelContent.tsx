@@ -15,7 +15,6 @@ interface AIModelContentProps {
     setErrorOccurred: (bool: boolean) => void;
     setSubmitStatus: (bool: boolean) => void;
     setIsSGA: (bool: boolean) => void;
-    height: number;
 }
 
 const validateFormData = (formData: Record<string, any>, requiredFields: string[]): boolean => {
@@ -82,6 +81,7 @@ export function AIModelContent({
                     setCheckRequiredFieldModal(false);
                 }, 5000);
                 setErrorOccurred(true);
+                console.log('Required fields are incomplete. Please fill them in.');
                 return;
             }
 
@@ -101,6 +101,7 @@ export function AIModelContent({
             });
 
             if (!validation) {
+                console.log('Validation failed. Please check the input values.');
                 setErrorOccurred(true);
                 return;
             }
@@ -134,10 +135,10 @@ export function AIModelContent({
                 setIsSGA(true);
             }
 
-            console.log('Prediction Response: ', predictionResponse);
+            setErrorOccurred(false)
         } catch (error) {
             setErrorOccurred(true);
-            console.log('Error occurred why imputing data: ', error);
+            console.log('Error occurred while imputing data: ', error);
         } finally {
             setLoading(false);
         }
@@ -145,12 +146,12 @@ export function AIModelContent({
 
     return (
         <div
-            className="flex flex-col bg-white rounded-md shadow p-4 bg-blue-900 bg-opacity-25 rounded-md shadow inline-block w-full mb-4"
+            className="flex flex-col rounded-md p-4 bg-blue-900 bg-opacity-35 rounded-md shadow inline-block w-full mb-4"
         >
             {/* Header Section */}
             <div className="flex justify-between items-center mb-4 pl-2">
                 {/* Title */}
-                <h2 className="text-4xl w-full text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-purple-500 to-blue-500">Fetal Information</h2>
+                <h2 className="text-4xl w-full font-extrabold text-white">Fetal Information</h2>
             </div>
 
             {/* Scrollable Table Section */}
@@ -160,16 +161,16 @@ export function AIModelContent({
                     setFormData={setFormData}
                 />
             </div>
-            <div className="flex flex-row my-4 justify-center">
-            <button
-                type="button"
-                className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg px-32 py-4 border-2 border-black 
-                        transition-all duration-300 ease-in-out transform hover:scale-105 hover:from-purple-600 hover:to-blue-600 
-                        hover:shadow-lg"
-                onClick={handleFormSubmit}
-            >
-                Get Prediction Now!
-            </button>
+            <div className="flex flex-row mt-6 mb-2 justify-center">
+                <button
+                    type="button"
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg px-32 py-4
+                            transition-all duration-300 ease-in-out transform hover:scale-105 hover:from-purple-600 hover:to-blue-600 
+                            hover:shadow-lg font-bold"
+                    onClick={handleFormSubmit}
+                >
+                    Get Prediction
+                </button>
             </div>
 
             <Modal

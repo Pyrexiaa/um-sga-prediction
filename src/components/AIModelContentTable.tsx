@@ -53,6 +53,37 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
         'MiddleCerebralArteryPeakSystolicVelocity'
     ]
 
+    const fieldDisplayNameMap: Record<string, string> = {
+        'Gender': 'Gender',
+        'MaternalAge': 'Maternal Age',
+        'HeadCircumference': 'Head Circumference (cm)',
+        'AbdominalCircumference': 'Abdominal Circumference (cm)',
+        'FemurLength': 'Femur Length (cm)',
+        'GestationalAge': 'Gestational Age',
+        'EstimatedFetalWeight': 'Estimated Fetal Weight (grams)',
+        'MaternalHeight': 'Maternal Height (cm)',
+        'MaternalWeight': 'Maternal Weight (kg)',
+        'LastPregnancySga': 'Last Pregnancy SGA',
+        'LastPregnancyFgr': 'Last Pregnancy FGR',
+        'LastPregnancyNormal': 'Last Pregnancy Normal',
+        'PreviousFailedPregnancy': 'Previous Failed Pregnancy',
+        'HighRiskPretermPreeclampsia': 'High Risk Preterm Preeclampsia',
+        'PregnancyInducedHypertension': 'Pregnancy Induced Hypertension',
+        'EssentialHypertension': 'Essential Hypertension',
+        'PregestationalDiabetes': 'Pregestational Diabetes',
+        'GestationalDiabetes': 'Gestational Diabetes',
+        'Smoking': 'Smoking',
+        'PlacentaSite': 'Placenta Site',
+        'BiparietalDiameter': 'Biparietal Diameter (mm)',
+        'CerebroplacentalRatio': 'Cerebroplacental Ratio',
+        'AmnioticFluid': 'Amniotic Fluid',
+        'AmnioticFluidIndex': 'Amniotic Fluid Index',
+        'UterineArteryResistanceIndex': 'Uterine Artery Resistance Index',
+        'UterineArteryPulsatilityIndex': 'Uterine Artery Pulsatility Index',
+        'UmbilicalArterialPulsatilityIndex': 'Umbilical Arterial Pulsatility Index',
+        'MiddleCerebralArteryPeakSystolicVelocity': 'Middle Cerebral Artery Peak Systolic Velocity (cm/s)',
+    };
+
     const trueFalseFields = [
         'LastPregnancySga',
         'LastPregnancyFgr',
@@ -130,8 +161,8 @@ export function AIModelContentTable({ formData, setFormData }: AIModelContentTab
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {fields.map((key) => (
                     <div key={key} className="flex flex-col">
-                        <label htmlFor={key} className="text-sm font-semibold mb-1 break-words">
-                            {key.replace(/([A-Z])/g, ' $1')}
+                        <label htmlFor={key} className="text-sm font-semibold mb-1 break-words text-white">
+                            {fieldDisplayNameMap[key] || key.replace(/([A-Z])/g, ' $1')}
                             {compulsoryFields.includes(key) && ' *'}
                         </label>
                         {renderInputField(key)}
